@@ -147,7 +147,13 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 transition-colors duration-200">
       {/* ================= 1. 全局快捷安装横幅 (置于屏幕最顶层) ================= */}
       {showInstallBanner && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-linear-to-r from-indigo-600 to-violet-600 text-white px-4 py-3 flex items-center justify-between shadow-lg text-xs font-medium animate-fade-in">
+        <div
+          className="fixed top-0 left-0 right-0 z-50 bg-linear-to-r from-indigo-600 to-violet-600 text-white px-4 py-3 flex items-center justify-between shadow-lg text-xs font-medium animate-fade-in"
+          style={{
+            // 让横幅内部向下顶，把字和按钮从时间、电池电量下面挤出来
+            paddingTop: "calc(0.75rem + env(safe-area-inset-top, 0px))",
+          }}
+        >
           <div className="flex items-center space-x-2">
             <span className="bg-white/20 p-1.5 rounded-lg text-white">🚀</span>
             <div>
@@ -185,7 +191,9 @@ export default function App() {
       {/* ================= 2. 顶层离线网络通知条 (紧跟安装横幅下方或动态堆叠) ================= */}
       <div
         className={`fixed left-0 right-0 z-40 transform transition-all duration-300 shadow-md ${
-          showInstallBanner ? "top-12.5" : "top-0" // 智能计算间距防止重叠
+          showInstallBanner
+            ? "top-[calc(50px+env(safe-area-inset-top,0))]"
+            : "top-[env(safe-area-inset-top,0px)]" // 智能计算间距防止重叠
         } ${!isOnline ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}
       >
         <div className="bg-red-500 text-white text-xs font-semibold py-2 px-4 flex items-center justify-center space-x-2">
@@ -200,8 +208,12 @@ export default function App() {
           // 关键：通过 transform 强行把 Dashboard 的 fixed 限制在这个 div 内部
           transform: "translate3d(0, 0, 0)",
           // 利用 margin-top 配合计算高度，把整个容器及里面的 fixed 元素整体往下推
-          marginTop: showInstallBanner ? "50px" : "0px",
-          height: showInstallBanner ? "calc(100vh - 50px)" : "100vh",
+          marginTop: showInstallBanner
+            ? "calc(50px + env(safe-area-inset-top, 0px))"
+            : "env(safe-area-inset-top, 0px)",
+          height: showInstallBanner
+            ? "calc(100vh - 50px - env(safe-area-inset-top, 0px))"
+            : "calc(100vh - env(safe-area-inset-top, 0px))",
         }}
       >
         {user ? (
